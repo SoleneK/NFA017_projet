@@ -1,7 +1,7 @@
 <?php
 
 require 'autoload.php';
-require 'db_functions.php';
+require 'db/db_functions.php';
 
 // Si un formulaire d'inscription a été envoyé, procéder à l'inscription et afficher le résultat
 if (isset($_POST['inscription_pseudo'])) {
