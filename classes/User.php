@@ -3,12 +3,14 @@
 class User {
 	private $id;
 	private $pseudo;
-	private $password;
 	private $mail;
 	private $balance;
 
-	public function __construct() {
-		echo '<p>Utilisateur créé</p>';
+	public function __construct($id, $pseudo, $mail, $balance) {
+		$this->setId($id);
+		$this->setPseudo($pseudo);
+		$this->setMail($mail);
+		$this->setBalance($balance);
 	}
 
 	public function getId () {
@@ -19,10 +21,6 @@ class User {
 		return $this->pseudo;
 	}
 
-	public function getPassword () {
-		return $this->password;
-	}
-
 	public function getMail () {
 		return $this->mail;
 	}
@@ -31,19 +29,15 @@ class User {
 		return $this->balance;
 	}
 
-	public function setId ($id) {
+	private function setId ($id) {
 		$this->id = $id;
 	}
 
-	public function setPseudo ($pseudo) {
+	private function setPseudo ($pseudo) {
 		$this->pseudo = $pseudo;
 	}
 
-	public function setPassword ($password) {
-		$this->password = $password;
-	}
-
-	public function setMail ($mail) {
+	private function setMail ($mail) {
 		$this->mail = $mail;
 	}
 
@@ -66,13 +60,13 @@ class User {
 			$message = 'NO_MAIL';
 		else if (preg_match('/\W/', $pseudo)) // Si le pseudo contient un caractère autre que chiffre, lettre, un derscore
 			$message = 'INCORRECT_PSEUDO';
-		else if (user_exists($pseudo))
+		else if (db_user_exists($pseudo))
 			$message = 'UNAVAILABLE_PSEUDO';
 		else if ($password1 != $password2)
 			$message = 'PASSWORD_UNMATCH';
 		else if (!preg_match('/^[\w\.]+@[\w\.]+\.[\w\.]+$/', $mail)) // Cherche bidule@truc.chose
 			$message = 'INCORRECT_MAIL';
-		else if (create_user($pseudo, $password1, $mail)) // Tout est bon, création du compte dans la BDD
+		else if (db_create_user($pseudo, password_hash($password1, PASSWORD_DEFAULT), $mail)) // Tout est bon, création du compte dans la BDD
 			$message = 'OK';
 		else 
 			$message = 'ERROR_CREATION';
@@ -80,5 +74,49 @@ class User {
 		return $message;
 	}
 
-	
+	/*	Fonction à appeler lors de la connexion de l'utilisateur
+	*	Paramètres :
+	*		le pseudo
+	*		le mot de passe (non haché si vient d'un formilaure, hashé si vient d'un cookie)
+	*		l'information de si l'identification est faite par un cookie
+	*		l'indication que l'utilisateur veut une identification permanente
+	*	La fonction vérifie si un utilisateur correspondant à la combinaison pseudo + mot de passe
+	*	Si oui, elle crée un objet utilisateur stocké dans $_SESSION et renvoie true
+	*	Si non, elle renvoie false
+	*/
+	public static function connection ($pseudo, $password, $cookie, $stay_connected = false) {
+		$infos = db_connect_user($pseudo);
+		var_dump($infos);
+
+		if ($infos == false) // si le nom d'utilisateur ne correspond à rien
+			$status = false;
+		else {
+			if ($cookie) {
+				// Vérification du mot de passe : la valeur en cookie doit être identique à celle en BDD
+				if ($password == $infos['usr_password'])
+					$status = true;
+				else
+					$status = false;
+			}
+			else {
+				if (password_verify($password, $infos['usr_password']))
+					$status = true;
+				else
+					$status = false;
+			}
+
+			// Si l'identification est réussie
+			if ($status) {
+				$_SESSION['user'] = new User($infos['usr_id'], $pseudo, $infos['usr_mail'], $infos['usr_balance']);
+
+				if ($stay_connected) { // Durée de vie des cookies : 20 jours
+					setcookie ('pseudo', $pseudo, time() + 60*60*24*30);
+					setcookie ('password', $infos['usr_password'], time() + 60*60*24*30);
+				}
+			}
+		}
+
+
+		return $status;
+	}
 }

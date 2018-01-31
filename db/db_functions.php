@@ -11,7 +11,7 @@ catch (Exception $e) {
 }
 
 // Vérifie si un utilisateur identifié apr son pseudo existe
-function user_exists ($pseudo) {
+function db_user_exists ($pseudo) {
 	global $db;
 	$query = 'SELECT COUNT(usr_pseudo) FROM users WHERE usr_pseudo = :pseudo';
 	$statement = $db->prepare($query);
@@ -27,25 +27,24 @@ function user_exists ($pseudo) {
 	return $user_exists;
 }
 
-function create_user ($pseudo, $password, $mail) {
+function db_create_user ($pseudo, $password, $mail) {
 	global $db;
 	$query = 'INSERT INTO users (usr_pseudo, usr_password, usr_mail) VALUES (:pseudo, :password, :mail)';
 	$statement = $db->prepare($query);
 	$statement->bindValue('pseudo', $pseudo, PDO::PARAM_STR);
-	$statement->bindValue('password', password_hash($password, PASSWORD_DEFAULT), PDO::PARAM_STR);
+	$statement->bindValue('password', $password, PDO::PARAM_STR);
 	$statement->bindValue('mail', $mail, PDO::PARAM_STR);
 	$status = $statement->execute();
 	return $status;
 }
 
-// Renvoie un tableau associatif avec les données de l'utilisateur si trouvé
-// Renvoie false sinon
-function get_user ($id) {
+// Cherche les infos d'un utilisateur, les renvoie s'il existe, renvoie false sinon
+function db_connect_user($pseudo) {
 	global $db;
-	$query = 'SELECT usr_pseudo, usr_password, usr_mail, usr_balance FROM users WHERE usr_id = :id';
+	$query = 'SELECT usr_id, usr_password, usr_mail, usr_balance FROM users WHERE usr_pseudo = :pseudo';
 	$statement = $db->prepare($query);
-	$statement->bindParam('id', $id, PDO::PARAM_INT);
+	$statement->bindValue('pseudo', $pseudo, PDO::PARAM_STR);
 	$statement->execute();
-	$user = $statement->fetch(PDO::FETCH_ASSOC);
-	return $user;
+	$response = $statement->fetch(PDO::FETCH_ASSOC);
+	return $response;
 }
