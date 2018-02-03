@@ -61,8 +61,10 @@ class User {
 		// Si le pseudo contient un caractère autre que chiffre, lettre, underscore
 		else if (preg_match('/\W/', $pseudo))
 			$message = 'INCORRECT_PSEUDO';
-		else if (db_user_exists($pseudo))
+		else if (db_pseudo_exists($pseudo))
 			$message = 'UNAVAILABLE_PSEUDO';
+		else if (db_mail_exists($mail))
+			$message = 'UNAVAILABLE_MAIL';
 		else if ($password1 != $password2)
 			$message = 'PASSWORD_UNMATCH';
 		// Toutes les données ont été validées, création du compte

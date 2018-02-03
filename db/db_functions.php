@@ -10,21 +10,26 @@ catch (Exception $e) {
 	exit();
 }
 
-// Vérifie si un utilisateur identifié par son pseudo existe
-function db_user_exists ($pseudo) {
+// Vérifie si un pseudo est déjà utilisé
+function db_pseudo_exists ($pseudo) {
 	global $db;
-	$query = 'SELECT COUNT(usr_pseudo) FROM users WHERE usr_pseudo = :pseudo';
+	$query = 'SELECT COUNT(usr_id) FROM users WHERE usr_pseudo = :pseudo';
 	$statement = $db->prepare($query);
 	$statement->bindValue('pseudo', $pseudo, PDO::PARAM_STR);
 	$statement->execute();
 	$response = $statement->fetch(PDO::FETCH_NUM);
-	
-	if ($response[0] == '0')
-		$user_exists = false;
-	else
-		$user_exists = true;
+	return $response[0];
+}
 
-	return $user_exists;
+// Vérifie si un mail est déjà utilisé
+function db_mail_exists ($mail) {
+	global $db;
+	$query = 'SELECT COUNT(usr_id) FROM users WHERE usr_mail = :mail';
+	$statement = $db->prepare($query);
+	$statement->bindValue('mail', $mail, PDO::PARAM_STR);
+	$statement->execute();
+	$response = $statement->fetch(PDO::FETCH_NUM);
+	return $response[0];
 }
 
 // Création d'un utilisateur
