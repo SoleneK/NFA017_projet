@@ -123,4 +123,27 @@ class User {
 	public function disconnection () {
 		unset($_SESSION['user']);
 	}
+
+	/*	Fonction à appeler lorsque l'utilisateur ajoute de l'argent à son solde
+	*	Paramètre : la somme
+	*	Sortie : code d'état de l'opération
+	*/
+	public function recharge_balance($amount) {
+		$amount = (int)$amount;
+		if ($amount > 0) {
+			$response = update_user($this->getId(), $this->getMail(), $this->getBalance());
+			if ($response) {
+				$this->setBalance($this->getBalance() + $amount);
+				$status = 'OK';
+			}
+			else
+				$status = 'ERROR_DB';	
+		}
+		else {
+			$status = 'ERROR_AMOUNT';
+		}
+
+		return $status;
+	}
 }
+
