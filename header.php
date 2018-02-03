@@ -17,3 +17,7 @@ session_start();
 if (!isset($_SESSION['user']) && isset($_COOKIE['pseudo']))
 	User::connection($_COOKIE['pseudo'], $_COOKIE['password'], true);
 
+// Si l'utilisateur a demandé à se déconnecter
+if (isset($_GET['disconnect']))
+	$_SESSION['user']->disconnection();
+
