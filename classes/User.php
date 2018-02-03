@@ -86,7 +86,6 @@ class User {
 	*/
 	public static function connection ($pseudo, $password, $cookie, $stay_connected = false) {
 		$infos = db_connect_user($pseudo);
-		var_dump($infos);
 
 		if ($infos == false) // si le nom d'utilisateur ne correspond à rien
 			$status = false;
@@ -118,5 +117,10 @@ class User {
 
 
 		return $status;
+	}
+
+	// Fonction à appeler pour la déconnexion de l'utilisateur
+	public function disconnection () {
+		unset($_SESSION['user']);
 	}
 }
