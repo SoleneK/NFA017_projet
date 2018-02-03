@@ -1,18 +1,17 @@
 <?php
 
-require 'autoload.php';
-require 'db/db_functions.php';
+require 'header.php';
 
 // Si un formulaire d'inscription a été envoyé, procéder à l'inscription et afficher le résultat
 if (isset($_POST['inscription_pseudo'])) {
-	include 'header.php';
+	include 'vue/header.php';
 	echo User::inscription($_POST['inscription_pseudo'], $_POST['inscription_password_1'], $_POST['inscription_password_2'], $_POST['inscription_mail']);
-	include 'footer.php';
+	include 'vue/footer.php';
 }
 
 // Sinon, afficher le formulaire d'inscription
 else {
-	include 'header.php';
+	include 'vue/header.php';
 
 	?>
 
@@ -34,5 +33,5 @@ else {
 
 	<?php
 
-	include 'footer.php';
+	include 'vue/footer.php';
 }

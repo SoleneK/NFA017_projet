@@ -58,18 +58,25 @@ class User {
 			$message = 'NO_PASSWORD';
 		else if (empty($mail))
 			$message = 'NO_MAIL';
-		else if (preg_match('/\W/', $pseudo)) // Si le pseudo contient un caractère autre que chiffre, lettre, un derscore
+		// Si le pseudo contient un caractère autre que chiffre, lettre, underscore
+		else if (preg_match('/\W/', $pseudo))
 			$message = 'INCORRECT_PSEUDO';
 		else if (db_user_exists($pseudo))
 			$message = 'UNAVAILABLE_PSEUDO';
 		else if ($password1 != $password2)
 			$message = 'PASSWORD_UNMATCH';
-		else if (!preg_match('/^[\w\.]+@[\w\.]+\.[\w\.]+$/', $mail)) // Cherche bidule@truc.chose
-			$message = 'INCORRECT_MAIL';
-		else if (db_create_user($pseudo, password_hash($password1, PASSWORD_DEFAULT), $mail)) // Tout est bon, création du compte dans la BDD
-			$message = 'OK';
-		else 
-			$message = 'ERROR_CREATION';
+		// Toutes les données ont été validées, création du compte
+		else {
+			// Génération de la clé pour la validation par mail
+			$key = md5(uniqid());
+			if (db_create_user($pseudo, password_hash($password1, PASSWORD_DEFAULT), $mail, $key)) {
+				include 'mail_validation_send.php';
+				send_validation_mail ($mail, $key);
+				$message = 'OK';
+			}
+			else 
+				$message = 'ERROR_CREATION';
+		}
 
 		return $message;
 	}
@@ -87,34 +94,28 @@ class User {
 	public static function connection ($pseudo, $password, $cookie, $stay_connected = false) {
 		$infos = db_connect_user($pseudo);
 
-		if ($infos == false) // si le nom d'utilisateur ne correspond à rien
-			$status = false;
+		// Vérification que l'utilisatur existe
+		if ($infos == false)
+			$status = 'INCORRECT_INFOS';
+		// Connexion par cookie : vérification que le mot de passe est identique à celui de la bdd
+		else if ($cookie && $password != $infos['usr_password'])
+			$status = 'INCORRECT_INFOS';
+		// COnnexion par formulaire : vérification que le mot de passe saisi est le bon
+		else if (!$cookie && !password_verify($password, $infos['usr_password']))
+			$status = 'INCORRECT_INFOS';
+		// Vérification que l'utilisateur est actif
+		else if (!$infos['usr_active'])
+			$status = 'NOT_ACTIVE';
+		// Identification réussie
 		else {
-			if ($cookie) {
-				// Vérification du mot de passe : la valeur en cookie doit être identique à celle en BDD
-				if ($password == $infos['usr_password'])
-					$status = true;
-				else
-					$status = false;
-			}
-			else {
-				if (password_verify($password, $infos['usr_password']))
-					$status = true;
-				else
-					$status = false;
-			}
+			$status = 'OK';
+			$_SESSION['user'] = new User($infos['usr_id'], $pseudo, $infos['usr_mail'], $infos['usr_balance']);
 
-			// Si l'identification est réussie
-			if ($status) {
-				$_SESSION['user'] = new User($infos['usr_id'], $pseudo, $infos['usr_mail'], $infos['usr_balance']);
-
-				if ($stay_connected) { // Durée de vie des cookies : 20 jours
-					setcookie ('pseudo', $pseudo, time() + 60*60*24*30);
-					setcookie ('password', $infos['usr_password'], time() + 60*60*24*30);
-				}
+			if ($stay_connected) { // Durée de vie des cookies : 20 jours
+				setcookie ('pseudo', $pseudo, time() + 60*60*24*30);
+				setcookie ('password', $infos['usr_password'], time() + 60*60*24*30);
 			}
 		}
-
 
 		return $status;
 	}
@@ -131,7 +132,7 @@ class User {
 	public function recharge_balance($amount) {
 		$amount = (int)$amount;
 		if ($amount > 0) {
-			$response = update_user($this->getId(), $this->getMail(), $this->getBalance());
+			$response = db_update_user($this->getId(), $this->getMail(), $this->getBalance());
 			if ($response) {
 				$this->setBalance($this->getBalance() + $amount);
 				$status = 'OK';

@@ -25,21 +25,27 @@ else {
 
 	include 'vue/header.php';
 	// En cas de connexion réussie
-	if (isset($result) && $result)
+	if (isset($result) && $result == 'OK')
 		echo '<p>Connexion réussie</p>';
 	else {
+		if (isset($result)) {
+			if ($result == 'INCORRECT_INFOS')
+				$connexion_error_message = 'Pseudo ou mot de passe incorrect';
+			else if ($result == 'NOT_ACTIVE')
+				$connexion_error_message = 'Votre compte n\'est pas activé';
+		}
+
+
 		?>
 
 		<form method="post" action="connection.php">
 			<p>
+
 		<?php
 
-		if (isset($result)):
-		?>
+		if (isset($connexion_error_message))
+			echo $connexion_error_message, '<br />';
 
-				Pseudo ou mot de passe incorrect<br />
-		<?php
-		endif;
 		?>
 				<label for="connexion_pseudo">Pseudo : </label>
 				<input type="text" name="connexion_pseudo" id="connexion_pseudo" /><br />
