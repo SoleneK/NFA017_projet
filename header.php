@@ -2,6 +2,8 @@
 
 require 'db/db_functions.php';
 
+date_default_timezone_set('Europe/Paris');
+
 function autoloader ($classname) {
 	require 'classes/' . $classname . '.php';
 }

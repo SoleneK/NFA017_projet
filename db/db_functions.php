@@ -10,6 +10,8 @@ catch (Exception $e) {
 	exit();
 }
 
+$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
 // Vérifie si un pseudo est déjà utilisé
 function db_pseudo_exists ($pseudo) {
 	global $db;
@@ -85,6 +87,21 @@ function db_activate_account ($mail) {
 	$query = 'UPDATE users SET usr_active = 1 WHERE usr_mail = :mail';
 	$statement = $db->prepare($query);
 	$statement->bindValue('mail', $mail, PDO::PARAM_STR);
+	$status = $statement->execute();
+	return $status;
+}
+
+function db_create_auction ($title, $image, $description, $begin_date, $end_date, $start_bid, $seller) {
+	global $db;
+	$query = 'INSERT INTO auction(auc_title, auc_image, auc_description, auc_begindate, auc_enddate, auc_startbid, usr_id) VALUES (:title, :image, :description, :begindate, :enddate, :startbid, :seller)';
+	$statement = $db->prepare($query);
+	$statement->bindValue('title', $title, PDO::PARAM_STR);
+	$statement->bindValue('image', $image, PDO::PARAM_STR);
+	$statement->bindValue('description', $description, PDO::PARAM_STR);
+	$statement->bindValue('begindate', $begin_date, PDO::PARAM_INT);
+	$statement->bindValue('enddate', $end_date, PDO::PARAM_INT);
+	$statement->bindValue('startbid', $start_bid, PDO::PARAM_INT);
+	$statement->bindValue('seller', $seller, PDO::PARAM_INT);
 	$status = $statement->execute();
 	return $status;
 }
