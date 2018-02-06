@@ -70,6 +70,17 @@ function db_update_user ($id, $mail, $balance) {
 	return $status;	
 }
 
+// Obtenir le pseudo d'un utilsiateur à partir de son id
+function db_get_user_pseudo ($id) {
+	global $db;
+	$query = 'SELECT usr_pseudo FROM users WHERE usr_id = :id';
+	$statement = $db->prepare($query);
+	$statement->bindValue('id', $id, PDO::PARAM_INT);
+	$statement->execute();
+	$response = $statement->fetch(PDO::FETCH_NUM);
+	return $response[0];
+}
+
 // Vérifie que la clé correspond au mail renseigné en comptant le nombre de lignes qui correspondent
 function db_check_validation_key ($mail, $key) {
 	global $db;
@@ -93,7 +104,7 @@ function db_activate_account ($mail) {
 
 function db_create_auction ($title, $image, $description, $begin_date, $end_date, $start_bid, $seller) {
 	global $db;
-	$query = 'INSERT INTO auction(auc_title, auc_image, auc_description, auc_begindate, auc_enddate, auc_startbid, usr_id) VALUES (:title, :image, :description, :begindate, :enddate, :startbid, :seller)';
+	$query = 'INSERT INTO auctions(auc_title, auc_image, auc_description, auc_begindate, auc_enddate, auc_startbid, usr_id) VALUES (:title, :image, :description, :begindate, :enddate, :startbid, :seller)';
 	$statement = $db->prepare($query);
 	$statement->bindValue('title', $title, PDO::PARAM_STR);
 	$statement->bindValue('image', $image, PDO::PARAM_STR);
@@ -105,3 +116,26 @@ function db_create_auction ($title, $image, $description, $begin_date, $end_date
 	$status = $statement->execute();
 	return $status;
 }
+
+// Retourne la liste des enchères d'une annonce, classées de la plus récente à la plus ancienne
+function db_get_bids ($id_auction, $last_only = false) {
+	global $db;
+	$query = 'SELECT bid_id, usr_id, bid_amount, bid_date FROM bids WHERE auc_id = :id_auction ORDER BY bid_date DESC';
+	if ($last_only)
+		$query .= ' LIMIT 1';
+	$statement = $db->prepare($query);
+	$statement->bindValue('id_auction', $id_auction, PDO::PARAM_INT);
+	$statement->execute();
+	return $statement;
+}
+
+function db_get_auction_by_id ($id) {
+	global $db;
+	$query = 'SELECT auc_title, auc_image, auc_description, auc_begindate, auc_enddate, usr_id, auc_startbid, auc_active FROM auctions WHERE auc_id = :id';
+	$statement = $db->prepare($query);
+	$statement->bindValue('id', $id, PDO::PARAM_STR);
+	$statement->execute();
+	$response = $statement->fetch(PDO::FETCH_ASSOC);
+	return $response;
+}
+

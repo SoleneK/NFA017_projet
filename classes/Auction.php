@@ -6,14 +6,121 @@ class Auction {
 	private $image;
 	private $description;
 	private $begin_date;
-	private $enddate;
+	private $end_date;
 	private $id_seller;
+	private $pseudo_seller;
 	private $start_bid;
 	private $bids_list;
 	private $active;
 
-	public function __construct () {
+	public function get_id() {
+		return $this->id;
+	}
 
+	public function get_title() {
+		return $this->title;
+	}
+
+	public function get_image() {
+		return $this->image;
+	}
+
+	public function get_description() {
+		return $this->description;
+	}
+
+	public function get_begin_date() {
+		return $this->begin_date;
+	}
+
+	public function get_end_date() {
+		return $this->end_date;
+	}
+
+	public function get_id_seller() {
+		return $this->id_seller;
+	}
+
+	public function get_pseudo_seller () {
+		return $this->pseudo_seller;
+	}
+
+	public function get_start_bid() {
+		return $this->start_bid;
+	}
+
+	public function get_bids_list() {
+		return $this->bids_list;
+	}
+
+	public function get_active() {
+		return $this->active;
+	}
+
+	private function set_id($id) {
+		$this->id = $id;
+	}
+
+	private function set_title($title) {
+		$this->title = htmlspecialchars($title);
+	}
+
+	private function set_image($image) {
+		$this->image = $image;
+	}
+
+	private function set_description($description) {
+		$this->description = htmlspecialchars($description);
+	}
+
+	private function set_begin_date($begin_date) {
+		$this->begin_date = $begin_date;
+	}
+
+	private function set_end_date($end_date) {
+		$this->end_date = $end_date;
+	}
+
+	private function set_id_seller($id_seller) {
+		$this->id_seller = $id_seller;
+	}
+
+	private function set_pseudo_seller($pseudo_seller) {
+		$this->pseudo_seller = $pseudo_seller;
+	}
+
+	private function set_start_bid($start_bid) {
+		$this->start_bid = $start_bid;
+	}
+
+	private function set_active($active) {
+		$this->active = $active;
+	}
+
+	// Le constructeur n'est appelé que lors de la création d'une enchère à partir des données de la BDD
+	public function __construct($id, $title, $image, $description, $begin_date, $end_date, $id_seller, $start_bid, $active) {
+		$this->set_id($id);
+		$this->set_title($title);
+		$this->set_image($image);
+		$this->set_description($description);
+		$this->set_begin_date($begin_date);
+		$this->set_end_date($end_date);
+		$this->set_id_seller($id_seller);
+		$this->set_pseudo_seller(db_get_user_pseudo($id_seller));
+		$this->set_start_bid($start_bid);
+		$this->set_active($active);
+
+		// Récupération de la liste des enchères
+		$bids_list = db_get_bids($this->get_id());
+
+		while ($bid = $bids_list->fetch(PDO::FETCH_ASSOC)) {
+			$this->add_bid_element($bid['bid_id'], $bid['bid_amount'], $bid['bid_date'], $bid['usr_id']);
+		}
+	}
+
+	//	Ajoute une enchère à la variable $bids_list
+	public function add_bid_element($id, $amount, $date, $buyer) {
+		$this->bids_list[] = new Bid($id, $amount, $date, $buyer);
 	}
 
 	/*	Fonction à appeler lors de la création d'une annonce
@@ -26,10 +133,10 @@ class Auction {
 	*		l'enchère de départ
 	*	Retour : message d'information de la réussite de l'opération ou du problème rencontré
 	*/ 
-	public static function create_auction ($title, $image, $description, $end_date, $id_seller, $start_bid) {
+	public static function create_auction($title, $image, $description, $end_date, $id_seller, $start_bid) {
 		// Récupérer l'extention du fichier image
 		$extension = strtolower(pathinfo($_FILES[$image]['name'], PATHINFO_EXTENSION));
-		$authorized_extension = ['jpg', 'jpeg', 'gif', 'png'];
+		$authorized_extensions = ['jpg', 'jpeg', 'gif', 'png'];
 
 		$max_image_size = 1024 * 1024;
 
@@ -49,7 +156,7 @@ class Auction {
 		else if (is_null($start_bid))
 			$message = 'NO_START_BID';
 		// Vérifier que le fichier image a une extension .jpg, .jpeg, .gif ou .png
-		else if (!in_array($extension, $authorized_extension))
+		else if (!in_array($extension, $authorized_extensions))
 			$message = 'NOT_AN_IMAGE';
 		// Vérifier que l'image ne pèse pas plus de 5 Mo
 		else if (filesize($_FILES[$image]['tmp_name']) > $max_image_size)
@@ -70,7 +177,7 @@ class Auction {
 				resize_image($_FILES[$image]['tmp_name'], $image_width, $image_height, $extension, $file_name);
 
 				// Supprimer l'image envoyée en upload
-				unlink ($_FILES[$image]['tmp_name']);
+				unlink($_FILES[$image]['tmp_name']);
 			}
 			else {
 				// Déplacer l'image envoyée dans le fichier images
@@ -78,12 +185,21 @@ class Auction {
 			}
 
 			// Créer l'enchère dans la base de données
-			if (db_create_auction ($title, $file_name, $description, $begin_date, $end_date, (int)$start_bid, (int)$id_seller))
+			if (db_create_auction($title, $file_name, $description, $begin_date, $end_date, (int)$start_bid, (int)$id_seller))
 				$message = 'OK';
 			else
 				$message = 'ERROR_CREATION';
 		}
 
 		return $message;
+	}
+
+	public function get_current_bid() {
+		if (is_null($this->get_bids_list()))
+			$amount = $this->get_start_bid();
+		else
+			$amount = $this->get_bids_list()[0]->get_amount();
+
+		return $amount;
 	}
 }

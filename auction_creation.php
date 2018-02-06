@@ -15,7 +15,7 @@ if (isset($_POST['auction_title'])) {
 	else
 		$end_date = strtotime($_POST['auction_date'].' '.$_POST['auction_time']);
 
-	$message = Auction::create_auction ($_POST['auction_title'], 'auction_image', $_POST['auction_description'], $end_date, $_SESSION['user']->getId(), $_POST['auction_start_bid']);
+	$message = Auction::create_auction ($_POST['auction_title'], 'auction_image', $_POST['auction_description'], $end_date, $_SESSION['user']->get_id(), $_POST['auction_start_bid']);
 
 	include 'vue/header.php';
 	echo '<p>', $message, '</p>';

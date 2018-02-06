@@ -6,43 +6,43 @@ class User {
 	private $mail;
 	private $balance;
 
-	public function __construct($id, $pseudo, $mail, $balance) {
-		$this->setId($id);
-		$this->setPseudo($pseudo);
-		$this->setMail($mail);
-		$this->setBalance($balance);
-	}
-
-	public function getId () {
+	public function get_id () {
 		return $this->id;
 	}
 
-	public function getPseudo () {
+	public function get_pseudo () {
 		return $this->pseudo;
 	}
 
-	public function getMail () {
+	public function get_mail () {
 		return $this->mail;
 	}
 
-	public function getBalance () {
+	public function get_balance () {
 		return $this->balance;
 	}
 
-	private function setId ($id) {
+	private function set_id ($id) {
 		$this->id = $id;
 	}
 
-	private function setPseudo ($pseudo) {
+	private function set_pseudo ($pseudo) {
 		$this->pseudo = $pseudo;
 	}
 
-	private function setMail ($mail) {
+	private function set_mail ($mail) {
 		$this->mail = $mail;
 	}
 
-	public function setBalance ($balance) {
+	public function set_balance ($balance) {
 		$this->balance = $balance;
+	}
+
+	public function __construct($id, $pseudo, $mail, $balance) {
+		$this->set_id($id);
+		$this->set_pseudo($pseudo);
+		$this->set_mail($mail);
+		$this->set_balance($balance);
 	}
 
 	/*	Fonction à appeler lors de l'inscription d'un utilisateur
@@ -134,9 +134,9 @@ class User {
 	public function recharge_balance($amount) {
 		$amount = (int)$amount;
 		if ($amount > 0) {
-			$response = db_update_user($this->getId(), $this->getMail(), $this->getBalance());
+			$response = db_update_user($this->get_id(), $this->get_mail(), $this->get_balance());
 			if ($response) {
-				$this->setBalance($this->getBalance() + $amount);
+				$this->set_balance($this->get_balance() + $amount);
 				$status = 'OK';
 			}
 			else
