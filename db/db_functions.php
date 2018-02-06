@@ -139,3 +139,44 @@ function db_get_auction_by_id ($id) {
 	return $response;
 }
 
+function db_get_auctions_by_seller($id, $active) {
+	global $db;
+	$query = 'SELECT auc_id, auc_title, auc_image, auc_description, auc_begindate, auc_enddate, auc_startbid FROM auctions WHERE usr_id = :id AND auc_active = :active';
+	$statement = $db->prepare($query);
+	$statement->bindValue('id', $id, PDO::PARAM_INT);
+	$statement->bindValue('active', $active, PDO::PARAM_INT);
+	$statement->execute();
+	return $statement;
+}
+
+function db_get_auctions_by_buyer($id, $running) {
+	global $db;
+	$query = 'SELECT auc_id, auc_title, auc_image, auc_description, auc_begindate, auc_enddate, usr_id, auc_startbid, auc_active
+		FROM auctions
+		WHERE usr_id IN (SELECT usr_id FROM bids WHERE usr_id = :id)
+		AND auc_enddate';
+	if ($running)
+		$query .= ' > '.time();
+	else
+		$query .= ' < '.time();
+	$statement = $db->prepare($query);
+	$statement->bindValue('id', $id, PDO::PARAM_INT);
+	$statement->execute();
+	return $statement;
+}
+
+// Renvoie $quantity annonces en cours à partir du n° $start, classées par date de fin décroissante
+function db_get_auctions ($start, $quantity) {
+	global $db;
+	$query = 'SELECT auc_id, auc_title, auc_image, auc_description, auc_begindate, auc_enddate, usr_id, auc_startbid, auc_active
+		FROM auctions
+		WHERE auc_enddate > :current_time
+		ORDER BY auc_enddate DESC
+		LIMIT :quantity OFFSET :start';
+	$statement = $db->prepare($query);
+	$statement->bindValue('current_time', time(), PDO::PARAM_INT);
+	$statement->bindValue('quantity', $quantity, PDO::PARAM_INT);
+	$statement->bindValue('start', $start, PDO::PARAM_INT);
+	$statement->execute();
+	return $statement;
+}

@@ -35,7 +35,7 @@ class Bid {
 	}
 
 	private function set_id_buyer($id_buyer) {
-		$this->idBuyer = $id_buyer;
+		$this->id_buyer = $id_buyer;
 	}
 
 	public function __construct($id, $amount, $date, $buyer) {
