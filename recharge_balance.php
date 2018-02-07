@@ -13,7 +13,7 @@ include 'vue/header.php';
 
 // Si l'utilisateur a demandé à recharger le compte
 if (isset($_POST['form_recharge_balance'])) {
-	$response = $_SESSION['user']->recharge_balance($_POST['form_recharge_balance']);
+	$response = $_SESSION['user']->modify_balance($_POST['form_recharge_balance'], true);
 	switch ($response) {
 		case 'OK':
 			$message = 'Votre solde a bien été augmenté';

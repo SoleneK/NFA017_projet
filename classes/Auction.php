@@ -237,7 +237,7 @@ class Auction {
 					$message = 'ERROR_CREATION';
 				else {
 					// Enlever le montant du solde de l'utilisateur
-					$_SESSION['user']->make_bid($amount);
+					$_SESSION['user']->modify_balance($amount, false);
 
 					// On rend à celui qui avait la plus haute enchère le montant qu'il avait immobilisé
 					if (!is_null($this->get_bids_list()))
@@ -249,8 +249,29 @@ class Auction {
 					$message = 'OK';
 				}
 			}
+		}		
+
+		return $message;
+	}
+
+	// Traiter une enchère terminée pour que l'utilisateur récupère le montant de la vente
+	public function close_auction() {
+		$seller = $_SESSION['user']->get_id();
+
+		// Vérifier que l'utilisateur est bien le vendeur
+		if ($seller != $this->get_id_seller())
+			$message = 'NOT_SELLER';
+		// Vérifier que l'annonce est terminée
+		else if ($this->get_end_date() > time())
+			$message = 'RUNNING';
+		// Vérifier que l'annonce n'a pas déjà été traitée
+		else if (!$this->get_active())
+			$message = 'ALREADY_CLOSED';
+		else {
+			$_SESSION['user']->modify_balance($this->get_current_bid(), true);
+			db_close_auction($this->get_id());
+			$message = 'OK';
 		}
-		
 
 		return $message;
 	}

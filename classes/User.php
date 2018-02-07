@@ -129,14 +129,10 @@ class User {
 		setcookie('password', '', time() - 1);
 	}
 
-	/*	Fonction à appeler lorsque l'utilisateur ajoute de l'argent à son solde
-	*	Paramètre : la somme
-	*	Sortie : code d'état de l'opération
-	*/
-	public function recharge_balance($amount) {
+	public function modify_balance($amount, $add) {
 		$amount = (int)$amount;
-		if ($amount > 0) {
-			$response = db_modify_balance($this->get_id(), $amount, true);
+		if ($amount >= 0) {
+			$response = db_modify_balance($this->get_id(), $amount, $add);
 			if ($response) {
 				$this->set_balance($this->get_balance() + $amount);
 				$status = 'OK';
@@ -151,16 +147,5 @@ class User {
 		return $status;
 	}
 
-	public function make_bid($amount) {
-		$response = db_modify_balance($this->get_id(), $amount, false);
-		if ($response) {
-			$this->set_balance($this->get_balance() - $amount);
-			$status = 'OK';
-		}
-		else
-			$status = 'DB_ERROR';
-
-		return $status;
-	}
 }
 

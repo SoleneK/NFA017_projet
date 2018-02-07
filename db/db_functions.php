@@ -197,3 +197,12 @@ function db_get_auctions($start, $quantity) {
 	$statement->execute();
 	return $statement;
 }
+
+function db_close_auction($id) {
+	global $db;
+	$query = 'UPDATE auctions SET auc_active = false WHERE auc_id = :id';
+	$statement = $db->prepare($query);
+	$statement->bindValue('id', $id, PDO::PARAM_INT);
+	$status = $statement->execute();
+	return $status;
+}
