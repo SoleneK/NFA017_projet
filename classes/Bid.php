@@ -45,4 +45,15 @@ class Bid {
 		$this->set_id_buyer($buyer);
 	}
 	
+	public static function create($amount, $date, $buyer, $id_auction) {
+		if (db_create_bid($buyer, $amount, $date, $id_auction)) {
+			global $db;
+			$id = $db->lastInsertId();
+			$bid = new Bid($id, $amount, $date, $buyer);
+		}
+		else
+			$bid = false;
+
+		return $bid;
+	}
 }

@@ -13,7 +13,7 @@ catch (Exception $e) {
 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 // Vérifie si un pseudo est déjà utilisé
-function db_pseudo_exists ($pseudo) {
+function db_pseudo_exists($pseudo) {
 	global $db;
 	$query = 'SELECT COUNT(usr_id) FROM users WHERE usr_pseudo = :pseudo';
 	$statement = $db->prepare($query);
@@ -24,7 +24,7 @@ function db_pseudo_exists ($pseudo) {
 }
 
 // Vérifie si un mail est déjà utilisé
-function db_mail_exists ($mail) {
+function db_mail_exists($mail) {
 	global $db;
 	$query = 'SELECT COUNT(usr_id) FROM users WHERE usr_mail = :mail';
 	$statement = $db->prepare($query);
@@ -35,7 +35,7 @@ function db_mail_exists ($mail) {
 }
 
 // Création d'un utilisateur
-function db_create_user ($pseudo, $password, $mail, $key) {
+function db_create_user($pseudo, $password, $mail, $key) {
 	global $db;
 	$query = 'INSERT INTO users (usr_pseudo, usr_password, usr_mail, usr_key) VALUES (:pseudo, :password, :mail, :key)';
 	$statement = $db->prepare($query);
@@ -48,7 +48,7 @@ function db_create_user ($pseudo, $password, $mail, $key) {
 }
 
 // Cherche les infos d'un utilisateur, les renvoie s'il existe, renvoie false sinon
-function db_connect_user ($pseudo) {
+function db_connect_user($pseudo) {
 	global $db;
 	$query = 'SELECT usr_id, usr_password, usr_mail, usr_balance, usr_active FROM users WHERE usr_pseudo = :pseudo';
 	$statement = $db->prepare($query);
@@ -58,20 +58,25 @@ function db_connect_user ($pseudo) {
 	return $response;
 }
 
-// Mise à jour du mail ou du solde de l'utilisateur identifié par son id
-function db_update_user ($id, $mail, $balance) {
+// Ajout ($add = true) ou retrait ($add = false) de $montant à l'utilisateur n° $id
+function db_modify_balance($id, $amount, $add) {
 	global $db;
-	$query = 'UPDATE users SET usr_mail = :mail, usr_balance = :balance WHERE usr_id = :id';
+	$query = 'UPDATE users SET usr_balance = usr_balance ';
+	if ($add)
+		$query .= '+';
+	else
+		$query .= '-';
+	$query .= ' :amount WHERE usr_id = :id';
 	$statement = $db->prepare ($query);
-	$statement->bindValue('mail', $mail, PDO::PARAM_STR);
-	$statement->bindValue('balance', $balance, PDO::PARAM_INT);
+
+	$statement->bindValue('amount', $amount, PDO::PARAM_INT);
 	$statement->bindValue('id', $id, PDO::PARAM_INT);
 	$status = $statement->execute();
 	return $status;	
 }
 
 // Obtenir le pseudo d'un utilsiateur à partir de son id
-function db_get_user_pseudo ($id) {
+function db_get_user_pseudo($id) {
 	global $db;
 	$query = 'SELECT usr_pseudo FROM users WHERE usr_id = :id';
 	$statement = $db->prepare($query);
@@ -82,7 +87,7 @@ function db_get_user_pseudo ($id) {
 }
 
 // Vérifie que la clé correspond au mail renseigné en comptant le nombre de lignes qui correspondent
-function db_check_validation_key ($mail, $key) {
+function db_check_validation_key($mail, $key) {
 	global $db;
 	$query = 'SELECT COUNT(usr_id) FROM users WHERE usr_mail = :mail AND usr_key = :key';
 	$statement = $db->prepare($query);
@@ -93,7 +98,7 @@ function db_check_validation_key ($mail, $key) {
 	return $response[0];
 }
 
-function db_activate_account ($mail) {
+function db_activate_account($mail) {
 	global $db;
 	$query = 'UPDATE users SET usr_active = 1 WHERE usr_mail = :mail';
 	$statement = $db->prepare($query);
@@ -102,7 +107,7 @@ function db_activate_account ($mail) {
 	return $status;
 }
 
-function db_create_auction ($title, $image, $description, $begin_date, $end_date, $start_bid, $seller) {
+function db_create_auction($title, $image, $description, $begin_date, $end_date, $start_bid, $seller) {
 	global $db;
 	$query = 'INSERT INTO auctions(auc_title, auc_image, auc_description, auc_begindate, auc_enddate, auc_startbid, usr_id) VALUES (:title, :image, :description, :begindate, :enddate, :startbid, :seller)';
 	$statement = $db->prepare($query);
@@ -118,7 +123,7 @@ function db_create_auction ($title, $image, $description, $begin_date, $end_date
 }
 
 // Retourne la liste des enchères d'une annonce, classées de la plus récente à la plus ancienne
-function db_get_bids ($id_auction, $last_only = false) {
+function db_get_bids($id_auction, $last_only = false) {
 	global $db;
 	$query = 'SELECT bid_id, usr_id, bid_amount, bid_date FROM bids WHERE auc_id = :id_auction ORDER BY bid_date DESC';
 	if ($last_only)
@@ -129,7 +134,19 @@ function db_get_bids ($id_auction, $last_only = false) {
 	return $statement;
 }
 
-function db_get_auction_by_id ($id) {
+function db_create_bid($id_buyer, $amount, $date, $id_auction) {
+	global $db;
+	$query = 'INSERT INTO bids(usr_id, bid_amount, bid_date, auc_id) VALUES (:usr_id, :amount, :bid_date, :auc_id)';
+	$statement = $db->prepare($query);
+	$statement->bindValue('usr_id', $id_buyer);
+	$statement->bindValue('amount', $amount);
+	$statement->bindValue('bid_date', $date);
+	$statement->bindValue('auc_id', $id_auction);
+	$status = $statement->execute();
+	return $status;
+}
+
+function db_get_auction_by_id($id) {
 	global $db;
 	$query = 'SELECT auc_title, auc_image, auc_description, auc_begindate, auc_enddate, usr_id, auc_startbid, auc_active FROM auctions WHERE auc_id = :id';
 	$statement = $db->prepare($query);
@@ -166,7 +183,7 @@ function db_get_auctions_by_buyer($id, $running) {
 }
 
 // Renvoie $quantity annonces en cours à partir du n° $start, classées par date de fin décroissante
-function db_get_auctions ($start, $quantity) {
+function db_get_auctions($start, $quantity) {
 	global $db;
 	$query = 'SELECT auc_id, auc_title, auc_image, auc_description, auc_begindate, auc_enddate, usr_id, auc_startbid, auc_active
 		FROM auctions

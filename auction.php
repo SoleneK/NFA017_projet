@@ -14,6 +14,10 @@ if (!isset($_GET['id']) || !$auction)
 	echo 'Aucune annonce n\'a été trouvée :(';
 
 else {
+	// Si l'utilisateur envoie une enchère
+	if (isset($_POST['set_bid_amount']))
+		$response = $auction->create_new_bid((int)$_POST['set_bid_amount']);
+
 	?>
 
 	<h3><?=$auction->get_title(); ?></h3>
@@ -30,8 +34,10 @@ else {
 		</form>
 	</p>
 
-
 	<?php
+
+	if (isset($response))
+		echo '<p>', $response, '</p>';
 }
 
 

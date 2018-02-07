@@ -119,8 +119,13 @@ class Auction {
 	}
 
 	//	Ajoute une enchère à la variable $bids_list
-	public function add_bid_element($id, $amount, $date, $buyer) {
-		$this->bids_list[] = new Bid($id, $amount, $date, $buyer);
+	public function add_bid_element($bid, $amount, $date, $buyer) {
+		$this->bids_list[] = new Bid($bid, $amount, $date, $buyer);
+	}
+
+	// Ajoute une nouvelle enchère au début du tableau
+	public function add_new_bid($bid) {
+		array_unshift($this->bids_list, $bid);
 	}
 
 	/*	Fonction à appeler lors de la création d'une annonce
@@ -201,5 +206,52 @@ class Auction {
 			$amount = $this->get_bids_list()[0]->get_amount();
 
 		return $amount;
+	}
+
+	public function create_new_bid($amount) {
+		$date_bid = time();
+
+		// Vérifier qu'un utilisateur est conencté
+		if (!isset($_SESSION['user']))
+			$message = 'NO_USER_CONNECTED';
+		else {
+			$buyer = $_SESSION['user']->get_id();
+
+			// Vérifier que l'annonce n'est pas terminée
+			if ($date_bid > $this->get_end_date())
+				$message = 'AUCTION_CLOSED';
+			// Vérifier que l'utilisateur qui enchérit n'est pas le vendeur
+			else if ($buyer == $this->get_id_seller())
+				$message = 'IS_SELLER';
+			// Vérifier que le montant est strictement supérieur à celui de l'enchère en cours
+			else if ($amount < $this->get_current_bid())
+				$message = 'BID_INFERIOR';
+			// Vérifier que l'acheteur a un solde suffisant pour enchérir
+			else if ($_SESSION['user']->get_balance() < $amount)
+				$message = 'INSUFFICIENT_BALANCE';
+			else {
+				$bid = BID::create($amount, $date_bid, $buyer, $this->get_id());
+
+				// Vérifier que l'insertion en BDD s'est bien déroulée
+				if (!$bid) 
+					$message = 'ERROR_CREATION';
+				else {
+					// Enlever le montant du solde de l'utilisateur
+					$_SESSION['user']->make_bid($amount);
+
+					// On rend à celui qui avait la plus haute enchère le montant qu'il avait immobilisé
+					if (!is_null($this->get_bids_list()))
+						db_modify_balance($this->get_bids_list()[0]->get_id_buyer(), $this->get_bids_list()[0]->get_amount(), true);
+
+					// On ajoute la nouvelle enchère à la liste des enchères de l'annonce
+					$this->add_new_bid($bid);
+
+					$message = 'OK';
+				}
+			}
+		}
+		
+
+		return $message;
 	}
 }

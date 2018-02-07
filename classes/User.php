@@ -6,35 +6,35 @@ class User {
 	private $mail;
 	private $balance;
 
-	public function get_id () {
+	public function get_id() {
 		return $this->id;
 	}
 
-	public function get_pseudo () {
+	public function get_pseudo() {
 		return $this->pseudo;
 	}
 
-	public function get_mail () {
+	public function get_mail() {
 		return $this->mail;
 	}
 
-	public function get_balance () {
+	public function get_balance() {
 		return $this->balance;
 	}
 
-	private function set_id ($id) {
+	private function set_id($id) {
 		$this->id = $id;
 	}
 
-	private function set_pseudo ($pseudo) {
+	private function set_pseudo($pseudo) {
 		$this->pseudo = $pseudo;
 	}
 
-	private function set_mail ($mail) {
+	private function set_mail($mail) {
 		$this->mail = $mail;
 	}
 
-	public function set_balance ($balance) {
+	public function set_balance($balance) {
 		$this->balance = $balance;
 	}
 
@@ -93,7 +93,7 @@ class User {
 	*	Si oui, elle crée un objet utilisateur stocké dans $_SESSION et renvoie true
 	*	Si non, elle renvoie false
 	*/
-	public static function connection ($pseudo, $password, $cookie, $stay_connected = false) {
+	public static function connection($pseudo, $password, $cookie, $stay_connected = false) {
 		$infos = db_connect_user($pseudo);
 
 		// Vérification que l'utilisatur existe
@@ -123,8 +123,10 @@ class User {
 	}
 
 	// Fonction à appeler pour la déconnexion de l'utilisateur
-	public function disconnection () {
+	public function disconnection() {
 		unset($_SESSION['user']);
+		setcookie('pseudo', '', time() - 1);
+		setcookie('password', '', time() - 1);
 	}
 
 	/*	Fonction à appeler lorsque l'utilisateur ajoute de l'argent à son solde
@@ -134,7 +136,7 @@ class User {
 	public function recharge_balance($amount) {
 		$amount = (int)$amount;
 		if ($amount > 0) {
-			$response = db_update_user($this->get_id(), $this->get_mail(), $this->get_balance());
+			$response = db_modify_balance($this->get_id(), $amount, true);
 			if ($response) {
 				$this->set_balance($this->get_balance() + $amount);
 				$status = 'OK';
@@ -145,6 +147,18 @@ class User {
 		else {
 			$status = 'ERROR_AMOUNT';
 		}
+
+		return $status;
+	}
+
+	public function make_bid($amount) {
+		$response = db_modify_balance($this->get_id(), $amount, false);
+		if ($response) {
+			$this->set_balance($this->get_balance() - $amount);
+			$status = 'OK';
+		}
+		else
+			$status = 'DB_ERROR';
 
 		return $status;
 	}

@@ -32,7 +32,7 @@ if (isset($_POST['form_recharge_balance'])) {
 }
 
 ?>
-<p>Solde : <?=$_SESSION['user']->getBalance(); ?></p>
+<p>Solde : <?=$_SESSION['user']->get_balance(); ?></p>
 <form method="post" action="recharge_balance.php">
 	<p>
 		Ajouter de l'argent à votre compte<br />
