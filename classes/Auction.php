@@ -227,7 +227,7 @@ class Auction {
 			else if ($amount < $this->get_current_bid())
 				$message = 'BID_INFERIOR';
 			// Vérifier que l'acheteur a un solde suffisant pour enchérir
-			else if ($_SESSION['user']->get_balance() < $amount)
+			else if ($_SESSION['user']->get_checked_balance() < $amount)
 				$message = 'INSUFFICIENT_BALANCE';
 			else {
 				$bid = BID::create($amount, $date_bid, $buyer, $this->get_id());

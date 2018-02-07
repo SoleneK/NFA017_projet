@@ -58,6 +58,16 @@ function db_connect_user($pseudo) {
 	return $response;
 }
 
+function db_get_balance($id) {
+	global $db;
+	$query = 'SELECT usr_balance FROM users WHERE usr_id = :id';
+	$statement = $bd->prepare($query);
+	$statement->bindValue('id', $id, PDO::PARAM_INT);
+	$statement->execute();
+	$response = $statement->fetch(PDO::FETCH_NUM);
+	return $response[0];
+}
+
 // Ajout ($add = true) ou retrait ($add = false) de $montant à l'utilisateur n° $id
 function db_modify_balance($id, $amount, $add) {
 	global $db;
@@ -67,8 +77,8 @@ function db_modify_balance($id, $amount, $add) {
 	else
 		$query .= '-';
 	$query .= ' :amount WHERE usr_id = :id';
-	$statement = $db->prepare ($query);
 
+	$statement = $db->prepare ($query);
 	$statement->bindValue('amount', $amount, PDO::PARAM_INT);
 	$statement->bindValue('id', $id, PDO::PARAM_INT);
 	$status = $statement->execute();
@@ -128,6 +138,7 @@ function db_get_bids($id_auction, $last_only = false) {
 	$query = 'SELECT bid_id, usr_id, bid_amount, bid_date FROM bids WHERE auc_id = :id_auction ORDER BY bid_date DESC';
 	if ($last_only)
 		$query .= ' LIMIT 1';
+
 	$statement = $db->prepare($query);
 	$statement->bindValue('id_auction', $id_auction, PDO::PARAM_INT);
 	$statement->execute();
@@ -176,6 +187,7 @@ function db_get_auctions_by_buyer($id, $running) {
 		$query .= ' > '.time();
 	else
 		$query .= ' < '.time();
+
 	$statement = $db->prepare($query);
 	$statement->bindValue('id', $id, PDO::PARAM_INT);
 	$statement->execute();

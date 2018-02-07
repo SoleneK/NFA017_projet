@@ -34,7 +34,7 @@ class User {
 		$this->mail = $mail;
 	}
 
-	public function set_balance($balance) {
+	private function set_balance($balance) {
 		$this->balance = $balance;
 	}
 
@@ -134,7 +134,7 @@ class User {
 		if ($amount >= 0) {
 			$response = db_modify_balance($this->get_id(), $amount, $add);
 			if ($response) {
-				$this->set_balance($this->get_balance() + $amount);
+				$this->set_balance(db_get_balance($this->get_id()));
 				$status = 'OK';
 			}
 			else
@@ -145,6 +145,11 @@ class User {
 		}
 
 		return $status;
+	}
+
+	// Obtenir le solde depuis la BDD, pour les opérations critiques
+	public function get_checked_balance() {
+		return db_get_balance($this->get_id());
 	}
 
 }
