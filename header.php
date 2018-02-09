@@ -1,24 +1,30 @@
 <?php
 
-require 'db/db_functions.php';
+require 'library/db_functions.php';
 
 date_default_timezone_set('Europe/Paris');
 
 function autoloader ($classname) {
-	require 'classes/' . $classname . '.php';
+	require 'classes/'.$classname.'.php';
 }
 
 spl_autoload_register ('autoloader');
 
-/*	Si un utilisateur est connecté, l'ouverture de la session rappelle l'objet User
-*	Sinon, si un utilisateur est mémorisé dans les cookies, il est connecté
-*/
 session_start();
 
-if (!isset($_SESSION['user']) && isset($_COOKIE['pseudo']))
-	User::connection($_COOKIE['pseudo'], $_COOKIE['password'], true);
+if (!isset($_SESSION['user']))
+	// Connexion de l'utilisateur par cookie
+	if (isset($_COOKIE['pseudo']))
+		User::connection($_COOKIE['pseudo'], $_COOKIE['password'], true);
+	// Connexion de l'utilisateur par formulaire
+	else if (isset($_POST['connection_pseudo'])){
+		if (isset ($_POST['connection_persists']))
+			$stay_connected = true;
+		else
+			$stay_connected = false;
+		$connexion_result = User::connection($_POST['connexion_pseudo'], $_POST['connection_password'], false, $stay_connected);
+	}
 
-// Si l'utilisateur a demandé à se déconnecter
 if (isset($_SESSION['user']) && isset($_GET['disconnect']))
 	$_SESSION['user']->disconnection();
 

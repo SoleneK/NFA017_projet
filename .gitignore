@@ -1,3 +1,4 @@
-config_db.php
-config_mail.php
+library/config_db.php
+library/config_mail.php
 test.php
+images/
