@@ -129,8 +129,9 @@ class User {
 		setcookie('password', '', time() - 1);
 	}
 
+	// Ajout ou retrait d'un montant positif ou nul au solde de l'utilisateur
 	public function modify_balance($amount, $add) {
-		$amount = (int)$amount;
+		$amount = (float)$amount;
 		if ($amount >= 0) {
 			$response = db_modify_balance($this->get_id(), $amount, $add);
 			if ($response) {

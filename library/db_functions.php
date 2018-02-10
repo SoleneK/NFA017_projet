@@ -61,8 +61,8 @@ function db_connect_user($pseudo) {
 function db_get_balance($id) {
 	global $db;
 	$query = 'SELECT usr_balance FROM users WHERE usr_id = :id';
-	$statement = $bd->prepare($query);
-	$statement->bindValue('id', $id, PDO::PARAM_INT);
+	$statement = $db->prepare($query);
+	$statement->bindValue('id', $id, PDO::PARAM_STR);
 	$statement->execute();
 	$response = $statement->fetch(PDO::FETCH_NUM);
 	return $response[0];
@@ -79,7 +79,7 @@ function db_modify_balance($id, $amount, $add) {
 	$query .= ' :amount WHERE usr_id = :id';
 
 	$statement = $db->prepare ($query);
-	$statement->bindValue('amount', $amount, PDO::PARAM_INT);
+	$statement->bindValue('amount', $amount, PDO::PARAM_STR);
 	$statement->bindValue('id', $id, PDO::PARAM_INT);
 	$status = $statement->execute();
 	return $status;	
@@ -126,7 +126,7 @@ function db_create_auction($title, $image, $description, $begin_date, $end_date,
 	$statement->bindValue('description', $description, PDO::PARAM_STR);
 	$statement->bindValue('begindate', $begin_date, PDO::PARAM_INT);
 	$statement->bindValue('enddate', $end_date, PDO::PARAM_INT);
-	$statement->bindValue('startbid', $start_bid, PDO::PARAM_INT);
+	$statement->bindValue('startbid', $start_bid, PDO::PARAM_STR);
 	$statement->bindValue('seller', $seller, PDO::PARAM_INT);
 	$status = $statement->execute();
 	return $status;

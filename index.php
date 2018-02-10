@@ -1,4 +1,4 @@
 <?php
 
-require 'header.php';
+require 'init.php';
 require 'vue/header.php';
