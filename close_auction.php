@@ -1,6 +1,6 @@
 <?php
 
-require 'header.php';
+require 'init.php';
 require 'auction_functions.php';
 
 // Si l'utilisateur n'est pas connecté, redirection

@@ -39,7 +39,7 @@ else {
 	</p>
 	<form method="post" action="account.php">
 		<label for="form_recharge_balance">Ajouter de l'argent</label> : 
-		<input type="text" name="form_recharge_balance" id="form_recharge_balance" />
+		<input type="text" name="form_recharge_balance" id="form_recharge_balance" required />
 		<input type="submit" value="Recharger" />
 		<?php
 		if (isset($recharge_balance_status))
