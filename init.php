@@ -24,7 +24,7 @@ if (!isset($_SESSION['user']))
 			$stay_connected = true;
 		else
 			$stay_connected = false;
-		$connexion_result = User::connection($_POST['connexion_pseudo'], $_POST['connection_password'], false, $stay_connected);
+		$connexion_result = User::connection($_POST['connection_pseudo'], $_POST['connection_password'], false, $stay_connected);
 	}
 
 if (isset($_SESSION['user']) && isset($_GET['disconnect']))
