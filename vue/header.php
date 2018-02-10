@@ -57,7 +57,7 @@
 
 			<p>
 				<?=$_SESSION['user']->get_pseudo(); ?><br />
-				Solde : <?=$_SESSION['user']->get_balance(); ?> (<a href="<?=$_SESSION['server_url']; ?>account.php">recharger</a>)
+				Solde : <?=$_SESSION['user']->get_balance(); ?> € (<a href="<?=$_SESSION['server_url']; ?>account.php">recharger</a>)
 			</p>
 			<p>
 				<a href="index.php?disconnect">Se déconnecter</a><br />
@@ -67,7 +67,7 @@
 				<p><a href="<?=$_SESSION['server_url']; ?>index.html">Toutes les annonces</a></p>
 			<hr />
 			<p>
-				<a href="<?=$_SESSION['server_url']; ?>create_auction.php">Mettre un objet en vente</a><br />
+				<a href="<?=$_SESSION['server_url']; ?>auction_creation.php">Mettre un objet en vente</a><br />
 				<a href="<?=$_SESSION['server_url']; ?>active_auctions.php">Mes annonces en cours</a><br />
 				<a href="<?=$_SESSION['server_url']; ?>closed_auctions.php">Mes annonces terminées</a>
 			</p>

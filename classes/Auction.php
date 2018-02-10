@@ -178,7 +178,7 @@ class Auction {
 			list($image_width, $image_height) = getimagesize($_FILES[$image]['tmp_name']);
 			if ($image_width > 250 || $image_height > 250) {
 				// Créer une image rendimensionnée et l'enregistre dans le dosser images
-				require 'resize_image.php';
+				require 'library/resize_image.php';
 				resize_image($_FILES[$image]['tmp_name'], $image_width, $image_height, $extension, $file_name);
 
 				// Supprimer l'image envoyée en upload
@@ -190,7 +190,7 @@ class Auction {
 			}
 
 			// Créer l'enchère dans la base de données
-			if (db_create_auction($title, $file_name, $description, $begin_date, $end_date, (int)$start_bid, (int)$id_seller))
+			if (db_create_auction($title, $file_name, $description, $begin_date, $end_date, (float)$start_bid, (int)$id_seller))
 				$message = 'OK';
 			else
 				$message = 'ERROR_CREATION';

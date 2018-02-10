@@ -39,13 +39,13 @@ function resize_image($source_filename, $source_width, $source_height, $source_t
 	// Enregistrement du fichier
 	switch ($source_type) {
 		case 'jpeg':
-			imagejpeg($destination, 'images/'.$file_name);
+			imagejpeg($destination, 'images/auctions/'.$file_name);
 			break;
 		case 'gif':
-			imagegif($destination, 'images/'.$file_name);
+			imagegif($destination, 'images/auctions/'.$file_name);
 			break;
 		case 'png':
-			imagepng($destination, 'images/'.$file_name);
+			imagepng($destination, 'images/auctions/'.$file_name);
 			break;
 	}
 }

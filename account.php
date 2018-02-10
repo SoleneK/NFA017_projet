@@ -35,7 +35,7 @@ else {
 
 	<h2>Mon solde</h2>
 	<p>
-		Solde disponible : <?=$_SESSION['user']->get_balance(); ?>
+		Solde disponible : <?=$_SESSION['user']->get_balance(); ?> €
 	</p>
 	<form method="post" action="account.php">
 		<label for="form_recharge_balance">Ajouter de l'argent</label> : 
