@@ -3,9 +3,9 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require '../PHPMailer/src/Exception.php';
-require '../PHPMailer/src/PHPMailer.php';
-require '../PHPMailer/src/SMTP.php';
+require 'PHPMailer/src/Exception.php';
+require 'PHPMailer/src/PHPMailer.php';
+require 'PHPMailer/src/SMTP.php';
 
 require 'config_mail.php';
 
@@ -29,7 +29,7 @@ function send_validation_mail ($mail_address, $key) {
 
 	//Content
 	$mail->isHTML(true);
-	$mail->Subject = utf8_decode('Création de compte sur Le Bazar des Merveilles');
+	$mail->Subject = utf8_decode('Votre compte vient d\'être créé sur le Bazar des Merveilles');
 
 	$host = 'http://'.$_SERVER['HTTP_HOST'];
 	$uri = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
