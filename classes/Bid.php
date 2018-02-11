@@ -5,6 +5,7 @@ class Bid {
 	private $amount;
 	private $date;
 	private $id_buyer;
+	private $pseudo_buyer;
 
 	public function get_id() {
 		return $this->id;
@@ -20,6 +21,10 @@ class Bid {
 
 	public function get_id_buyer() {
 		return $this->id_buyer;
+	}
+
+	public function get_pseudo_buyer() {
+		return $this->pseudo_buyer;
 	}
 
 	private function set_id($id) {
@@ -38,11 +43,16 @@ class Bid {
 		$this->id_buyer = $id_buyer;
 	}
 
+	private function set_pseudo_buyer($pseudo_buyer) {
+		$this->pseudo_buyer = $pseudo_buyer;
+	}
+
 	public function __construct($id, $amount, $date, $buyer) {
 		$this->set_id($id);
 		$this->set_amount($amount);
 		$this->set_date($date);
 		$this->set_id_buyer($buyer);
+		$this->set_pseudo_buyer(db_get_user_pseudo($buyer));
 	}
 	
 	public static function create($amount, $date, $buyer, $id_auction) {

@@ -14,15 +14,13 @@ function get_auction_by_id($id) {
 }
 
 // Prend en paramètre l'id d'un utilisateur et renvoie la liste des annonces (actives ou inactives) qu'il a publiées ou false sinon
-function get_auctions_by_seller($id_seller, $active) {
-	$response = db_get_auctions_by_seller($id_seller, $active);
+function get_auctions_by_seller($id_seller, $running) {
+	$response = db_get_auctions_by_seller($id_seller, $running);
 
-	if (is_null($response))
-		$auctions_list = false;
-	else {
-		while ($auction = $response->fetch(PDO::FETCH_ASSOC)) {
-			$auctions_list[] = new Auction($auction['auc_id'], $auction['auc_title'], $auction['auc_image'], $auction['auc_description'], $auction['auc_begindate'], $auction['auc_enddate'], $id_seller, $auction['auc_startbid'], $active);
-		}
+	$auctions_list = [];
+
+	while ($auction = $response->fetch(PDO::FETCH_ASSOC)) {
+		$auctions_list[] = new Auction($auction['auc_id'], $auction['auc_title'], $auction['auc_image'], $auction['auc_description'], $auction['auc_begindate'], $auction['auc_enddate'], $id_seller, $auction['auc_startbid'], $auction['auc_active']);
 	}
 
 	return $auctions_list;
@@ -32,12 +30,10 @@ function get_auctions_by_seller($id_seller, $active) {
 function get_auctions_by_buyer($id_buyer, $running) {
 	$response = db_get_auctions_by_buyer($id_buyer, $running);
 
-	if (is_null($response))
-		$auctions_list = false;
-	else {
-		while ($auction = $response->fetch(PDO::FETCH_ASSOC)) {
-			$auctions_list[] = new Auction($auction['auc_id'], $auction['auc_title'], $auction['auc_image'], $auction['auc_description'], $auction['auc_begindate'], $auction['auc_enddate'], $auction['usr_id'], $auction['auc_startbid'], $auction['auc_active']);
-		}
+	$auctions_list = [];
+
+	while ($auction = $response->fetch(PDO::FETCH_ASSOC)) {
+		$auctions_list[] = new Auction($auction['auc_id'], $auction['auc_title'], $auction['auc_image'], $auction['auc_description'], $auction['auc_begindate'], $auction['auc_enddate'], $auction['usr_id'], $auction['auc_startbid'], $auction['auc_active']);
 	}
 
 	return $auctions_list;
@@ -46,12 +42,10 @@ function get_auctions_by_buyer($id_buyer, $running) {
 function get_auctions($start, $quantity) {
 	$response = db_get_auctions((int)$start, (int)$quantity);
 
-	if (is_null($response))
-		$auctions_list = false;
-	else {
-		while ($auction = $response->fetch(PDO::FETCH_ASSOC)) {
-			$auctions_list[] = new Auction($auction['auc_id'], $auction['auc_title'], $auction['auc_image'], $auction['auc_description'], $auction['auc_begindate'], $auction['auc_enddate'], $auction['usr_id'], $auction['auc_startbid'], $auction['auc_active']);
-		}
+	$auctions_list = [];
+
+	while ($auction = $response->fetch(PDO::FETCH_ASSOC)) {
+		$auctions_list[] = new Auction($auction['auc_id'], $auction['auc_title'], $auction['auc_image'], $auction['auc_description'], $auction['auc_begindate'], $auction['auc_enddate'], $auction['usr_id'], $auction['auc_startbid'], $auction['auc_active']);
 	}
 
 	return $auctions_list;

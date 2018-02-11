@@ -64,11 +64,11 @@
 				<a href="<?=$_SESSION['server_url']; ?>account.php">Mes infos</a>
 			</p>
 			<hr />
-				<p><a href="<?=$_SESSION['server_url']; ?>index.html">Toutes les annonces</a></p>
+				<p><a href="<?=$_SESSION['server_url']; ?>index.php">Toutes les annonces</a></p>
 			<hr />
 			<p>
 				<a href="<?=$_SESSION['server_url']; ?>auction_creation.php">Mettre un objet en vente</a><br />
-				<a href="<?=$_SESSION['server_url']; ?>active_auctions.php">Mes annonces en cours</a><br />
+				<a href="<?=$_SESSION['server_url']; ?>running_auctions.php">Mes annonces en cours</a><br />
 				<a href="<?=$_SESSION['server_url']; ?>closed_auctions.php">Mes annonces terminées</a>
 			</p>
 			<hr />

@@ -97,6 +97,33 @@ class Auction {
 		$this->active = $active;
 	}
 
+	public function get_current_bid() {
+		if (is_null($this->get_bids_list()))
+			$amount = $this->get_start_bid();
+		else
+			$amount = $this->get_bids_list()[0]->get_amount();
+
+		return $amount;
+	}
+
+	public function get_id_current_buyer() {
+		if (is_null($this->get_bids_list()))
+			$id = null;
+		else
+			$id = $this->get_bids_list()[0]->get_id_buyer();
+
+		return $id;
+	}
+
+	public function get_pseudo_current_buyer() {
+		if (is_null($this->get_bids_list()))
+			$pseudo = null;
+		else
+			$pseudo = $this->get_bids_list()[0]->get_pseudo_buyer();
+
+		return $pseudo;
+	}
+
 	// Le constructeur n'est appelé que lors de la création d'une enchère à partir des données de la BDD
 	public function __construct($id, $title, $image, $description, $begin_date, $end_date, $id_seller, $start_bid, $active) {
 		$this->set_id($id);
@@ -199,15 +226,6 @@ class Auction {
 		return $message;
 	}
 
-	public function get_current_bid() {
-		if (is_null($this->get_bids_list()))
-			$amount = $this->get_start_bid();
-		else
-			$amount = $this->get_bids_list()[0]->get_amount();
-
-		return $amount;
-	}
-
 	public function create_new_bid($amount) {
 		$date_bid = time();
 
@@ -268,9 +286,14 @@ class Auction {
 		else if (!$this->get_active())
 			$message = 'ALREADY_CLOSED';
 		else {
-			$_SESSION['user']->modify_balance($this->get_current_bid(), true);
+			// Vérifier qu'il y a eu au moins une enchère
+			if (is_null($this->get_bids_list()))
+				$message = 'NO_BID';
+			else {
+				$_SESSION['user']->modify_balance($this->get_current_bid(), true);
+				$message = 'OK';
+			}			
 			db_close_auction($this->get_id());
-			$message = 'OK';
 		}
 
 		return $message;
