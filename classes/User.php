@@ -72,7 +72,7 @@ class User {
 			// Génération de la clé pour la validation par mail
 			$key = md5(uniqid());
 			if (db_create_user($pseudo, password_hash($password1, PASSWORD_DEFAULT), $mail, $key)) {
-				include '/library/mail_validation_send.php';
+				include 'library/mail_validation_send.php';
 				send_validation_mail ($mail, $key);
 				$message = 'OK';
 			}

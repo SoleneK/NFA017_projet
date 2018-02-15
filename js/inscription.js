@@ -1,4 +1,5 @@
 $(function() {
+	console.log('bip');
 	$('[data-toggle="tooltip"]').tooltip();
 
 	$('main form').on('submit', function(event) {

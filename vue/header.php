@@ -51,7 +51,7 @@
 						<label for="connection_password">Mot de passe :</label><br />
 						<input type="password" name="connection_password" id="connection_password" /><br />
 						<input type="checkbox" name="connection_persists" id="connection_persists" /> <label for="connection_persists">Rester connecté</label><br />
-						<input type="submit" class="btn btn-primary" value="Se connecter" />
+						<div class="text-center"><input type="submit" class="btn btn-primary" value="Se connecter" /></div>
 					</form>
 
 					<hr />
@@ -65,24 +65,24 @@
 
 					<p>
 						<?=$_SESSION['user']->get_pseudo(); ?><br />
-						Solde : <?=$_SESSION['user']->get_balance(); ?> € (<a href="<?=$_SESSION['server_url']; ?>account.php">recharger</a>)<br />
+						Solde : <?=$_SESSION['user']->get_balance(); ?> € (<a href="account.php">recharger</a>)<br />
 						<a href="index.php?disconnect">Se déconnecter</a><br />
 					</p>
 					<p>
-						<a href="<?=$_SESSION['server_url']; ?>account.php">Mes infos</a>
+						<a href="account.php">Mes infos</a>
 					</p>
 					<hr />
-						<p><a href="<?=$_SESSION['server_url']; ?>index.php">Toutes les annonces</a></p>
+						<p><a href="index.php">Toutes les annonces</a></p>
 					<hr />
 					<p>
-						<a href="<?=$_SESSION['server_url']; ?>auction_creation.php">Mettre un objet en vente</a><br />
-						<a href="<?=$_SESSION['server_url']; ?>running_auctions.php">Mes annonces en cours</a><br />
-						<a href="<?=$_SESSION['server_url']; ?>closed_auctions.php">Mes annonces terminées</a>
+						<a href="auction_creation.php">Mettre un objet en vente</a><br />
+						<a href="running_auctions.php">Mes annonces en cours</a><br />
+						<a href="closed_auctions.php">Mes annonces terminées</a>
 					</p>
 					<hr />
 					<p>
-						<a href="<?=$_SESSION['server_url']; ?>running_bids.php">Mes enchères en cours</a><br />
-						<a href="<?=$_SESSION['server_url']; ?>closed_bids.php">Mes enchères terminées</a>
+						<a href="running_bids.php">Mes enchères en cours</a><br />
+						<a href="closed_bids.php">Mes enchères terminées</a>
 					</p>
 
 					<?php

@@ -11,7 +11,6 @@ function autoloader ($classname) {
 spl_autoload_register ('autoloader');
 
 session_start();
-$_SESSION['server_url'] = 'http://'.$_SERVER['HTTP_HOST'].rtrim(dirname($_SERVER['PHP_SELF']), '/\\').'/';
 
 if (!isset($_SESSION['user']))
 	// Connexion de l'utilisateur par cookie
