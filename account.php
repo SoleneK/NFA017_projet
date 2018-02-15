@@ -3,11 +3,11 @@
 require 'init.php';
 require 'vue/header.php';
 
-echo '<h1>Mon compte</h1>';
+echo '<h1 class="mb-4">Mon compte</h1>';
 
 // Vérifier que l'utilisateur est connecté
 if (!isset($_SESSION['user']))
-	echo '<p>Vous n\'êtes pas connecté</p>';
+	echo '<p class="alert alert-danger">Vous n\'êtes pas connecté</p>';
 else {
 	// Si l'utilisateur a demandé à recharger son compte
 	if (isset($_POST['form_recharge_balance'])) {
@@ -27,24 +27,29 @@ else {
 
 	?>
 
-	<h2>Mes infos</h2>
-	<p>
-		Pseudo : <?=$_SESSION['user']->get_pseudo(); ?><br />
-		Mail : <?=$_SESSION['user']->get_mail(); ?>
-	</p>
+	<div class="text-left">
+		<h2 class="border-bottom">Mes infos</h2>
+		<p>
+			Pseudo : <?=$_SESSION['user']->get_pseudo(); ?><br />
+			Mail : <?=$_SESSION['user']->get_mail(); ?>
+		</p>
 
-	<h2>Mon solde</h2>
-	<p>
-		Solde disponible : <?=$_SESSION['user']->get_balance(); ?> €
-	</p>
-	<form method="post" action="account.php">
-		<label for="form_recharge_balance">Ajouter de l'argent</label> : 
-		<input type="text" name="form_recharge_balance" id="form_recharge_balance" required />
-		<input type="submit" value="Recharger" />
-		<?php
-		if (isset($recharge_balance_status))
-			echo '<br />', $recharge_balance_status;
-		?>
-	</form>
+		<h2 class="border-bottom">Mon solde</h2>
+		<p>
+			Solde disponible : <?=$_SESSION['user']->get_balance(); ?> €
+		</p>
+		<form method="post" action="account.php">
+			<label for="form_recharge_balance">Ajouter de l'argent</label> : 
+			<input type="text" name="form_recharge_balance" id="form_recharge_balance" required />
+			<input type="submit" class="btn btn-primary" value="Recharger" />
+
+		</form>
+	</div>
 	<?php
+		if (isset($recharge_balance_status))
+			if ($response == 'OK')
+				echo '<p class="alert alert-success">', $recharge_balance_status, '</p>';
+			else
+				echo '<p class="alert alert-danger">', $recharge_balance_status, '</p>';
+
 }

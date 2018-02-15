@@ -124,6 +124,10 @@ class Auction {
 		return $pseudo;
 	}
 
+	public function get_number_bids() {
+		return count ($this->get_bids_list());
+	}
+
 	// Le constructeur n'est appelé que lors de la création d'une enchère à partir des données de la BDD
 	public function __construct($id, $title, $image, $description, $begin_date, $end_date, $id_seller, $start_bid, $active) {
 		$this->set_id($id);
@@ -179,7 +183,7 @@ class Auction {
 		// Vérifier que tous les champs du formulaire sont remplis
 		if (is_null($title))
 			$message = 'NO_TITLE';
-		else if ($_FILES[$image]['tmp_name'] == '')
+		else if ($_FILES[$image]['name'] == '')
 			$message = 'NO_IMAGE';
 		else if (is_null($description))
 			$message = 'NO_DESCRIPTION';
@@ -191,7 +195,7 @@ class Auction {
 		else if (!in_array($extension, $authorized_extensions))
 			$message = 'NOT_AN_IMAGE';
 		// Vérifier que l'image ne pèse pas plus de 5 Mo
-		else if (filesize($_FILES[$image]['tmp_name']) > $max_image_size)
+		else if ($_FILES[$image]['error'] == 2 || filesize($_FILES[$image]['tmp_name']) > $max_image_size)
 			$message = 'IMAGE_TOO_BIG';
 		// Vérifier que la durée de l'enchère est comprise entre les bornes fixées
 		else if ($end_date < $min_end_date || $end_date > $max_end_date)
@@ -242,7 +246,7 @@ class Auction {
 			else if ($buyer == $this->get_id_seller())
 				$message = 'IS_SELLER';
 			// Vérifier que le montant est strictement supérieur à celui de l'enchère en cours
-			else if ($amount < $this->get_current_bid())
+			else if ($amount <= $this->get_current_bid())
 				$message = 'BID_INFERIOR';
 			// Vérifier que l'acheteur a un solde suffisant pour enchérir
 			else if ($_SESSION['user']->get_checked_balance() < $amount)

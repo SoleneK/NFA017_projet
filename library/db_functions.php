@@ -207,7 +207,7 @@ function db_get_auctions($start, $quantity) {
 	$query = 'SELECT auc_id, auc_title, auc_image, auc_description, auc_begindate, auc_enddate, usr_id, auc_startbid, auc_active
 		FROM auctions
 		WHERE auc_enddate > :current_time
-		ORDER BY auc_enddate DESC
+		ORDER BY auc_enddate
 		LIMIT :quantity OFFSET :start';
 	$statement = $db->prepare($query);
 	$statement->bindValue('current_time', time(), PDO::PARAM_INT);

@@ -13,12 +13,12 @@ require 'vue/header.php';
 if (db_check_validation_key($_GET['mail'], $_GET['key'])) {
 	$response = db_activate_account ($_GET['mail']);
 	if ($response)
-		echo '<p>Votre compte a été activé, vous pouvez maintenant vous connecter</p>';
+		echo '<p class="alert alert-success">Votre compte a été activé, vous pouvez maintenant vous connecter</p>';
 	else
-		echo '<p>Erreur pendant l\'activation, veuillez réessayer</p>';
+		echo '<p class="alert alert-danger">Erreur pendant l\'activation, veuillez réessayer</p>';
 }
 else {
-	echo '<p>Les informations fournies ne sont pas valides</p>';
+	echo '<p class="alert alert-danger">Les informations fournies ne sont pas valides</p>';
 }
 
 require 'vue/footer.php';
