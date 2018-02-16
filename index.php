@@ -21,7 +21,7 @@ foreach ($auctions_list as $auction) {
 			<div class="col text-left">
 				<a href="auction.php?id=<?=$auction->get_id(); ?>"><?=$auction->get_title(); ?></a><br />
 				<?=$auction->get_current_bid(); ?> € (<?=$auction->get_number_bids(); ?> enchères)<br />
-				Temps restant : <?=get_time_left($auction->get_end_date()); ?>
+				<span class="countdown_sentence"  data-end-date="<?=$auction->get_end_date() - time(); ?>">Temps restant : <?=get_time_left($auction->get_end_date()); ?></span>
 			</div>
 		</div>
 	</article>
@@ -33,6 +33,7 @@ foreach ($auctions_list as $auction) {
 	</div>
 	</div>
 	<div id="more_auctions"><button class="btn btn-primary">Afficher plus</button></div>
+	<script src="js/countdown.js"></script>
 	<script src="js/index.js"></script>
 
 <?php

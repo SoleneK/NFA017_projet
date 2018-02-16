@@ -28,7 +28,8 @@ else {
 					if (!is_null($auction->get_bids_list()))
 						echo ' par ', $auction->get_pseudo_current_buyer();
 					?>
-					<br />Cette annonce se termine dans <?=get_time_left($auction->get_end_date()); ?> (<?=date('d-m-Y H:i', $auction->get_end_date()); ?>)	
+					<br />
+					<span class="countdown_sentence"  data-end-date="<?=$auction->get_end_date() - time(); ?>">Cette annonce se termine dans <?=get_time_left($auction->get_end_date()); ?> (<?=date('d-m-Y H:i', $auction->get_end_date()); ?>)</span>	
 				</div>
 			</div>
 		</article>
@@ -36,4 +37,6 @@ else {
 		<?php
 
 	}
+
+	echo '<script src="js/countdown.js"></script>';
 }

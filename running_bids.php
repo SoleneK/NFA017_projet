@@ -24,7 +24,7 @@ else {
 				<div class="col text-left">
 					<a href="auction.php?id=<?=$auction->get_id(); ?>"><?=$auction->get_title(); ?></a><br />
 					Prix de vente actuel : <?=$auction->get_current_bid() ?> € par <?=$auction->get_pseudo_current_buyer(); ?><br />
-					Cette annonce se termine dans <?=get_time_left($auction->get_end_date()); ?> (<?=date('d-m-Y H:i', $auction->get_end_date()); ?>)<br />
+					<span class="countdown_sentence"  data-end-date="<?=$auction->get_end_date() - time(); ?>">Cette annonce se termine dans <?=get_time_left($auction->get_end_date()); ?> (<?=date('d-m-Y H:i', $auction->get_end_date()); ?>)</span><br />
 
 		<?php
 
@@ -40,5 +40,6 @@ else {
 
 		<?php
 
+		echo '<script src="js/countdown.js"></script>';
 	}
 }

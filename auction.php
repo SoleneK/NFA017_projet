@@ -46,7 +46,16 @@ else {
 		<img src="images/auctions/<?=$auction->get_image(); ?>" alt="<?=$auction->get_title(); ?>" /><br />
 		<em><?=$auction->get_description(); ?></em><br />
 		Annonce publiée par <?=$auction->get_pseudo_seller(); ?> le <?=date('d-m-Y', $auction->get_begin_date()); ?> à <?=date('H:i', $auction->get_begin_date()); ?><br />
-		Les enchères se terminent dans <?=get_time_left($auction->get_end_date()); ?> (<?=date('d-m-Y H:i', $auction->get_end_date()); ?>)<br />
+		
+		<?php
+		if ($auction->get_end_date() < time())
+			echo 'Enchère terminée le ', date('d-m-Y', $auction->get_end_date()), ' à ', date('H:i', $auction->get_end_date());
+		else {
+			echo '<span class="countdown_sentence"  data-end-date="', $auction->get_end_date() - time(), '">Les enchères se terminent dans ', get_time_left($auction->get_end_date()), ' (', date('d-m-Y H:i', $auction->get_end_date()), ')</span>';
+			echo '<script src="js/countdown.js"></script>';
+		}
+		?>
+		<br />
 		Prix de départ : <?=$auction->get_start_bid(); ?> €<br />
 		Enchère actuelle : <?=$auction->get_current_bid(); ?> €
 	</p>
@@ -54,7 +63,7 @@ else {
 		if (isset($_SESSION['user'])) {
 			?>
 
-			<form method="post" action="auction.php?id=<?=$auction->get_id(); ?>">
+			<form method="post" action="auction.php?id=<?=$auction->get_id(); ?>" class="countdown_remove">
 				<input type="text" name="set_bid_amount" required /> <input type="submit" class="btn btn-primary" value="Enchérir" />
 			</form>
 
@@ -65,7 +74,7 @@ else {
 			}
 		}
 		else {
-			echo '<p class="alert alert-danger">Vous devez être connecté pour enchérir</p>';
+			echo '<p class="alert alert-danger countdown_remove">Vous devez être connecté pour enchérir</p>';
 		}
 }
 

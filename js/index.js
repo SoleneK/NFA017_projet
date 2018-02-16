@@ -18,12 +18,13 @@ $(function() {
 						html += '<div class="col-3">';
 						html += '<img src="images/auctions/' + value['image'] + '" title="' + value['title'] + '" class="img-fluid" />';
 						html += '</div>';
-						html += '<div class="col-3 text-left">';
+						html += '<div class="col text-left">';
 						html += '<a href="auction.php?id=' + value['id'] + '" >' + value['title'] + '</a><br />';
 						html += value['current_bid'] + ' € (' + value['number_bids'] + ' enchères)<br />',
-						html += 'Temps restant : ' + value['time_left'];
+						html += '<span class="countdown_sentence"  data-end-date="' + value['countdown'] + '">Temps restant : ' + value['time_left'] + '</span>';
 						html += '</div></div></article>';
 						$('#auctions_list').append(html);
+						$('.countdown_sentence').each(set_countdown);
 					});
 					if (response['data'].length < auctions_by_page)
 						$('#more_auctions').remove();

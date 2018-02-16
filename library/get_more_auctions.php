@@ -27,6 +27,7 @@ else {
 				'title' => $auction->get_title(),
 				'image' => $auction->get_image(),
 				'current_bid' => $auction->get_current_bid(),
+				'countdown' =>$auction->get_end_date() - time(),
 				'time_left' => get_time_left($auction->get_end_date()),
 				'number_bids' => $auction->get_number_bids()
 				);
